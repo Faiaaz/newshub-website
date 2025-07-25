@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Article - Admin Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/trix/1.3.1/trix.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/trix/1.3.1/trix.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            margin: 0;
+            color: #333;
+        }
+        .btn {
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-primary {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #45a049;
+        }
+        .btn-secondary {
+            background-color: #666;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #555;
+        }
+        .btn-danger {
+            background-color: #f44336;
+            color: white;
+        }
+        .btn-danger:hover {
+            background-color: #d32f2f;
+        }
+        .form-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group label {
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .image-upload {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            background-color: #f9f9f9;
+            transition: border-color 0.3s;
+        }
+        .image-upload:hover {
+            border-color: #4CAF50;
+        }
+        .image-upload input[type="file"] {
+            display: none;
+        }
+        .image-upload label {
+            cursor: pointer;
+            color: #666;
+        }
+        .image-upload i {
+            font-size: 2em;
+            color: #999;
+            margin-bottom: 10px;
+        }
+        .preview-image {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        .current-image {
+            max-width: 100%;
+            max-height: 150px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .tags-container {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            min-height: 20px;
+        }
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            background-color: #4CAF50;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            gap: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+            animation: tagAppear 0.3s ease-out;
+        }
+        .tag:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .tag i {
+            cursor: pointer;
+            font-size: 0.8em;
+            opacity: 0.8;
+            transition: all 0.2s ease;
+        }
+        .tag i:hover {
+            opacity: 1;
+            color: #ffebee;
+            transform: scale(1.1);
+        }
+        @keyframes tagAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        .status-toggle {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #4CAF50;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+        .flash-message {
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .flash-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .flash-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .trix-editor {
+            min-height: 300px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .trix-button-group {
+            border-color: #ddd;
+        }
+        .trix-button {
+            border-color: #ddd;
+        }
+        .trix-button:hover {
+            background-color: #f8f9fa;
+        }
+        .article-info {
+            background-color: #e8f5e8;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .article-info p {
+            margin: 5px 0;
+            color: #2e7d32;
+        }
+        .tag-suggestion {
+            display: inline-block;
+            background-color: #e3f2fd;
+            color: #1976d2;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            margin: 2px;
+            cursor: pointer;
+            border: 1px solid #bbdefb;
+            transition: all 0.2s ease;
+        }
+        .tag-suggestion:hover {
+            background-color: #1976d2;
+            color: white;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-edit"></i> Edit Article</h1>
+            <div>
+                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+                <a href="{{ url_for('admin_delete', article_id=article.id) }}" class="btn btn-danger" 
+                   onclick="return confirm('Are you sure you want to delete this article? This action cannot be undone.')">
+                    <i class="fas fa-trash"></i> Delete
+                </a>
+            </div>
+        </div>
+
+        <div class="article-info">
+            <p><strong>Article ID:</strong> {{ article.id }}</p>
+            <p><strong>Created:</strong> {{ article.created_at.strftime('%B %d, %Y at %I:%M %p') }}</p>
+            <p><strong>Last Updated:</strong> {{ article.updated_at.strftime('%B %d, %Y at %I:%M %p') }}</p>
+            <p><strong>Status:</strong> <span style="color: {{ 'green' if article.status == 'published' else 'orange' }};">{{ article.status.title() }}</span></p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                <div class="flash-message flash-{{ category }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        {% endwith %}
+        
+        <div class="form-container">
+            <form method="POST" enctype="multipart/form-data">
+                <div class="form-grid">
+                    <div class="main-content">
+                        <div class="form-group">
+                            <label for="title">Article Title *</label>
+                            <input type="text" id="title" name="title" value="{{ article.title }}" required placeholder="Enter article title...">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="excerpt">Excerpt</label>
+                            <textarea id="excerpt" name="excerpt" placeholder="Brief summary of the article...">{{ article.excerpt or '' }}</textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="content">Content *</label>
+                            <input id="content" type="hidden" name="content" value="{{ article.content }}">
+                            <trix-editor input="content" placeholder="Start writing your article content here..."></trix-editor>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar">
+                        <div class="form-group">
+                            <label for="category_id">Category</label>
+                            <select id="category_id" name="category_id">
+                                <option value="">Select Category</option>
+                                {% for category in categories %}
+                                <option value="{{ category.id }}" {{ 'selected' if article.category_id == category.id else '' }}>
+                                    {{ category.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="tags">Tags</label>
+                            <input type="text" id="tags" name="tags" placeholder="Type tags and press Enter or comma..." value="{% for tag in article.tags %}{{ tag.name }}{% if not loop.last %}, {% endif %}{% endfor %}">
+                            <div class="tags-container" id="tags-container"></div>
+                            <small class="form-text text-muted">
+                                <strong>How to add tags:</strong> Type a tag and press Enter or comma. 
+                                <br><strong>Available tags:</strong> 
+                                {% for tag in tags %}
+                                <span class="tag-suggestion" onclick="addTagSuggestion('{{ tag.name }}')">{{ tag.name }}</span>{% if not loop.last %}, {% endif %}
+                                {% endfor %}
+                            </small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Publishing Status</label>
+                            <div class="status-toggle">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="status-toggle" name="status" value="published" {{ 'checked' if article.status == 'published' else '' }}>
+                                    <span class="slider"></span>
+                                </label>
+                                <span id="status-text">{{ 'Published' if article.status == 'published' else 'Draft' }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Featured Image</label>
+                            {% if article.image_url %}
+                            <div style="margin-bottom: 15px;">
+                                <strong>Current Image:</strong>
+                                <img src="{{ article.image_url }}" alt="Current featured image" class="current-image">
+                            </div>
+                            {% endif %}
+                            <div class="image-upload">
+                                <input type="file" id="image" name="image" accept="image/*">
+                                <label for="image">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <br>
+                                    Click to upload new image
+                                    <br>
+                                    <small>JPG, PNG, GIF up to 16MB</small>
+                                </label>
+                                <img id="preview" class="preview-image" style="display: none;">
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Update Article
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Status toggle
+        document.getElementById('status-toggle').addEventListener('change', function() {
+            const statusText = document.getElementById('status-text');
+            statusText.textContent = this.checked ? 'Published' : 'Draft';
+        });
+
+        // Image preview
+        document.getElementById('image').addEventListener('change', function() {
+            const file = this.files[0];
+            const preview = document.getElementById('preview');
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            } else {
+                preview.style.display = 'none';
+            }
+        });
+
+        // Tags handling - Completely rewritten for smooth operation
+        let tags = [];
+        const tagsInput = document.getElementById('tags');
+        const tagsContainer = document.getElementById('tags-container');
+        
+        // Initialize tags from existing value
+        function initializeTags() {
+            const initialValue = tagsInput.value.trim();
+            if (initialValue) {
+                tags = initialValue.split(',').map(tag => tag.trim()).filter(tag => tag);
+                updateTagsDisplay();
+            }
+        }
+        
+        // Update the visual display of tags
+        function updateTagsDisplay() {
+            tagsContainer.innerHTML = '';
+            
+            tags.forEach((tag, index) => {
+                const tagElement = document.createElement('div');
+                tagElement.className = 'tag';
+                tagElement.innerHTML = `
+                    <span>${tag}</span>
+                    <i class="fas fa-times" onclick="removeTag(${index})"></i>
+                `;
+                tagsContainer.appendChild(tagElement);
+            });
+            
+            // Update the input field value
+            tagsInput.value = tags.join(', ');
+        }
+        
+        // Add a new tag
+        function addTag(tagName) {
+            const cleanTag = tagName.trim();
+            if (cleanTag && !tags.includes(cleanTag)) {
+                tags.push(cleanTag);
+                updateTagsDisplay();
+                return true;
+            }
+            return false;
+        }
+        
+        // Remove a tag by index
+        function removeTag(index) {
+            if (index >= 0 && index < tags.length) {
+                tags.splice(index, 1);
+                updateTagsDisplay();
+            }
+        }
+        
+        // Add tag from suggestion
+        function addTagSuggestion(tagName) {
+            if (addTag(tagName)) {
+                // Visual feedback
+                const suggestion = event.target;
+                suggestion.style.backgroundColor = '#4CAF50';
+                suggestion.style.color = 'white';
+                setTimeout(() => {
+                    suggestion.style.backgroundColor = '';
+                    suggestion.style.color = '';
+                }, 300);
+            }
+        }
+        
+        // Handle keyboard input
+        tagsInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ',') {
+                e.preventDefault();
+                const tag = this.value.trim();
+                if (tag) {
+                    addTag(tag);
+                    this.value = '';
+                }
+            }
+        });
+        
+        // Handle input changes (for comma-separated input)
+        tagsInput.addEventListener('input', function() {
+            const value = this.value;
+            if (value.includes(',')) {
+                const parts = value.split(',');
+                if (parts.length > 1) {
+                    const lastPart = parts.pop().trim();
+                    parts.forEach(part => {
+                        if (part.trim()) {
+                            addTag(part.trim());
+                        }
+                    });
+                    this.value = lastPart;
+                }
+            }
+        });
+        
+        // Initialize tags on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeTags();
+        });
+        
+        // Also initialize immediately in case DOM is already loaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeTags);
+        } else {
+            initializeTags();
+        }
+
+        // Ensure tags input is up-to-date before form submit
+        document.querySelector('form').addEventListener('submit', function(e) {
+            updateTagsDisplay();
+        });
+    </script>
+</body>
+</html> 

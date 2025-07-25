@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ article.title }} - NewsHub</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* Header */
+        .header {
+            background: #fff;
+            border-bottom: 2px solid #e74c3c;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .header-top {
+            background: #e74c3c;
+            color: white;
+            padding: 8px 0;
+            font-size: 0.9rem;
+        }
+
+        .header-main {
+            padding: 1rem 0;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #e74c3c;
+            text-decoration: none;
+        }
+
+        .back-link {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .back-link:hover {
+            background: #f8f9fa;
+        }
+
+        /* Navigation */
+        .nav {
+            background: #fff;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .nav-list {
+            display: flex;
+            list-style: none;
+            gap: 0;
+        }
+
+        .nav-item a {
+            color: #333;
+            text-decoration: none;
+            padding: 1rem 1.5rem;
+            display: block;
+            font-weight: 500;
+            border-right: 1px solid #eee;
+            transition: background 0.2s;
+        }
+
+        .nav-item a:hover,
+        .nav-item a.active {
+            background: #e74c3c;
+            color: white;
+        }
+
+        /* Article */
+        .article-container {
+            background: #fff;
+            margin: 2rem 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .article-header {
+            padding: 2rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .article-category {
+            color: #e74c3c;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .article-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+
+        .article-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.9rem;
+            color: #999;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .article-image {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+        }
+
+        .article-content {
+            padding: 2rem;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #333;
+        }
+
+        .article-content h2,
+        .article-content h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 2rem 0 1rem 0;
+            color: #333;
+        }
+
+        .article-content p {
+            margin-bottom: 1.5rem;
+        }
+
+        .article-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        /* Tags */
+        .tags-section {
+            padding: 2rem;
+            border-top: 1px solid #eee;
+            background: #f8f9fa;
+        }
+
+        .tags-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background: #fff;
+            color: #666;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            text-decoration: none;
+            border: 1px solid #ddd;
+        }
+
+        .tag:hover {
+            background: #e74c3c;
+            color: white;
+            border-color: #e74c3c;
+        }
+
+        /* Related Articles */
+        .related-section {
+            background: #fff;
+            margin: 2rem 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 2rem;
+        }
+
+        .related-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #e74c3c;
+            border-bottom: 2px solid #e74c3c;
+            padding-bottom: 0.5rem;
+        }
+
+        .related-articles {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .related-article {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1rem;
+        }
+
+        .related-article:last-child {
+            border-bottom: none;
+        }
+
+        .related-article-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .related-article-title a {
+            color: #333;
+            text-decoration: none;
+        }
+
+        .related-article-title a:hover {
+            color: #e74c3c;
+        }
+
+        .related-article-meta {
+            font-size: 0.8rem;
+            color: #999;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .article-title {
+                font-size: 2rem;
+            }
+
+            .article-content {
+                font-size: 1rem;
+                padding: 1.5rem;
+            }
+
+            .nav-list {
+                flex-direction: column;
+            }
+
+            .nav-item a {
+                border-right: none;
+                border-bottom: 1px solid #eee;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-top">
+            <div class="container">
+                <div class="header-content">
+                    <span>Latest News & Updates</span>
+                    <a href="/admin/login" class="back-link">Admin Panel</a>
+                </div>
+            </div>
+        </div>
+        <div class="header-main">
+            <div class="container">
+                <div class="header-content">
+                    <a href="/" class="logo">NewsHub</a>
+                    <a href="/" class="back-link">← Back to Articles</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="container">
+            <ul class="nav-list">
+                <li class="nav-item">
+                    <a href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/">Latest</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/">News</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/">Politics</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/">Economy</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/">International</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/">Analysis</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <article class="article-container">
+            <header class="article-header">
+                <div class="article-category">{{ article.category.name }}</div>
+                <h1 class="article-title">{{ article.title }}</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-calendar"></i> {{ article.published_at.strftime('%B %d, %Y') }}</span>
+                    <span><i class="fas fa-clock"></i> {{ (article.content|length / 200)|round|int }} min read</span>
+                    <span><i class="fas fa-user"></i> Admin</span>
+                </div>
+            </header>
+
+            {% if article.image_url %}
+            <img src="{{ url_for('static', filename=article.image_url) }}" 
+                 alt="{{ article.title }}" class="article-image">
+            {% endif %}
+
+            <div class="article-content">
+                {{ article.content|safe }}
+            </div>
+
+            {% if article.tags %}
+            <footer class="tags-section">
+                <h3 class="tags-title">Tags</h3>
+                <div class="tags">
+                    {% for tag in article.tags %}
+                    <span class="tag">{{ tag.name }}</span>
+                    {% endfor %}
+                </div>
+            </footer>
+            {% endif %}
+        </article>
+
+        <!-- Related Articles Section -->
+        <section class="related-section">
+            <h3 class="related-title">Related Articles</h3>
+            <div class="related-articles">
+                <!-- This would typically show related articles from the same category -->
+                <article class="related-article">
+                    <h4 class="related-article-title">
+                        <a href="#">More articles from {{ article.category.name }}</a>
+                    </h4>
+                    <div class="related-article-meta">
+                        Latest news and updates
+                    </div>
+                </article>
+            </div>
+        </section>
+    </div>
+</body>
+</html> 
