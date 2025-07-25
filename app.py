@@ -13,7 +13,7 @@ load_dotenv()
 app = Flask(__name__)
 # Database configuration - use environment variable in production
 DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://postgres:1234d@localhost:5432/news_db')
-if DATABASE_URL.startswith('postgres://'):
+if DATABASE_URL and DATABASE_URL.startswith('postgres://'):
     DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 app.secret_key = 'your-secret-key-here'  # Change this to a secure secret key
